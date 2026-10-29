@@ -17,7 +17,15 @@ async def lifespan(app: FastAPI):
     close_client()
 
 
-app = FastAPI(title="CivicFix", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="CivicFix",
+    description=(
+        "Crowdsourced civic issue reporting and resolution tracking system. "
+        "CSE494 MongoDB mini-project supporting SDG 11 (Sustainable Cities and Communities)."
+    ),
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 # Register route modules
 app.include_router(issues.router)
