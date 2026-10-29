@@ -143,7 +143,6 @@ db.issues.aggregate([
 
 ---
 
-## Where Each MongoDB Concept Lives
 
 | Concept | Location in Code | Details |
 |---|---|---|
@@ -156,28 +155,7 @@ db.issues.aggregate([
 | **Query Optimisation** | `app/services/analytics.py` | `explain_query()` returning execution stages, keys, and docs examined |
 | **Native Driver** | `app/database.py` | PyMongo client connecting directly without ORM/ODM abstraction |
 
----
 
-## Demo Walkthrough for Viva
-
-1. **Server Health:** Visit `http://127.0.0.1:8000/health` → shows `{"status":"ok","database":"connected"}`.
-2. **Create Issue:** In Swagger UI (`/docs`), execute `POST /issues` → returns `201 Created` with generated ObjectId and initial `status_history`.
-3. **Database Validation:**
-   - In Swagger UI, try invalid category `alien` → returns `422 Unprocessable Entity`.
-   - In `mongosh`, execute: `db.issues.insertOne({ title: "bad" })` → rejected directly by MongoDB `$jsonSchema` validator (`error 121`).
-4. **Status Lifecycle:**
-   - Update an issue's status to `in_progress` → success.
-   - Try skipping directly from `submitted` to `resolved` → returns `409 Conflict`.
-   - Update from `in_progress` to `resolved` → success; status history now records all 3 stages.
-   - Try moving backward from `resolved` to `submitted` → rejected (`409 Conflict`).
-5. **Analytics:**
-   - Execute `GET /analytics/summary` → returns instant breakdown across all 58 issues.
-   - Execute `GET /analytics/resolution-time` → shows average hours to fix issues by category.
-6. **Query Plan Inspection (`explain`):**
-   - Execute `GET /analytics/explain?city=Phagwara` → plan stages show `IXSCAN` using `city_created_at` index.
-   - Execute `GET /analytics/explain?city=Phagwara&force_collection_scan=true` → plan stages show `COLLSCAN` scanning all 58 documents.
-
----
 
 ## Design Decisions
 
